@@ -15,4 +15,4 @@ options:
   message: "Hello world..."
 schema:
   message: "str?"
-image: "ghcr.io/dalethestirling/{arch}-addon-example"
+image: "ghcr.io/dalethestirling/{arch}-addon-weewx"
