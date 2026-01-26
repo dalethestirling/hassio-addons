@@ -2,6 +2,8 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
+USER root
+
 # Install dependencies
 # Interceptor extension, allowing capture through DNS redirection
 RUN apt-get update && apt-get install -y wget && \
