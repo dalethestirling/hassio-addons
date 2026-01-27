@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-config
 name: Weewx
-version: "1.0.0"
+version: "1.0.1"
 slug: weewx
 description: Addon for the weewx server
 url: "https://github.com/dalethestirling/hassio-addons/tree/main/weewx"
@@ -12,7 +12,7 @@ map:
   - share:rw
   - addon_config:rw
 options:
-  message: "Hello world..."
+  location: null
 schema:
-  message: "str?"
+  location: "str"
 image: "ghcr.io/dalethestirling/{arch}-addon-weewx"
