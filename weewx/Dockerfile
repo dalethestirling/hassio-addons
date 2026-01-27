@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y wget && \
     pip install git+https://github.com/felddy/weewx-home-assistant@v1.0.0
 
 # Install bashio 
-RUN wget -O /tmp/bashio.tar.gz "https://github.com/hassio-addons/bashio/archive/refs/tags/${BASHIO_VERSION}.tar.gz" && \
+RUN wget -O /tmp/bashio.tar.gz "https://github.com/hassio-addons/bashio/archive/refs/tags/$BASHIO_VERSION.tar.gz" && \
     mkdir /tmp/bashio && \
     tar zxvf /tmp/bashio.tar.gz --strip 1 -C /tmp/bashio && \
     mv /tmp/bashio/lib /usr/lib/bashio && \
