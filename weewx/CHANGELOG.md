@@ -1,14 +1,15 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
 
-## 1.2.0
-
-- Add an apparmor profile
-- Update to 3.15 base image with s6 v3
-- Add a sample script to run as service and constrain in aa profile
-
 ## 1.1.0
 
-- Updates
+- Transitioned from using the weewx-docker project's image as the base image and moved to hassio-addons/app-base image
+- Updated Dockerfile to align with Alpine tooling
+- Init now uses s6 overlay for better process management
+
+## 1.0.1
+
+- Updated my_proram script to use hassio config ui
+- Added use of bashio library for better access to homeassistant conventions and logging
 
 ## 1.0.0
 
