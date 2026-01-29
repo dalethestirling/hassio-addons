@@ -6,11 +6,18 @@
 - Updated Dockerfile to align with Alpine tooling
 - Init now uses s6 overlay for better process management
 
-## 1.0.1
+#### 1.1.1
 
-- Updated my_proram script to use hassio config ui
-- Added use of bashio library for better access to homeassistant conventions and logging
+- Updated the servicesd path from example to weewx
+- Updated echo statements to use bashio in my_program
 
 ## 1.0.0
 
 - Initial release
+
+#### 1.0.1
+
+- Updated my_proram script to use hassio config ui
+- Added use of bashio library for better access to homeassistant conventions and logging
+
+

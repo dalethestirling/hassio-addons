@@ -1,8 +1,8 @@
-#!/usr/bin/env bashio
+#!/usr/bin/with-contenv bashio
 
-set -o nounset
-set -o errexit
-set -o pipefail
+#set -o nounset
+#set -o errexit
+#set -o pipefail
 
 WEEWX_ROOT="/config"
 CONF_FILE="${WEEWX_ROOT}/weewx.conf"
@@ -19,7 +19,7 @@ if [ ! -f "${CONF_FILE}" ]; then
   weectl station create ${WEEWX_ROOT} \
       --no-prompt \
       --location=${STATION_LOCATION}
-  echo "A new set of configurations was created."
+  bashio::log.info "A new set of configurations was created."
   
   # Append the logging configuration to the generated weewx.conf
   cat << EOF >> "${CONF_FILE}"
@@ -30,13 +30,13 @@ if [ ! -f "${CONF_FILE}" ]; then
       handlers = console,
 EOF
 
-  echo "Console logging configuration has been appended to ${CONF_FILE}."
+  bashio::log.info "Console logging configuration has been appended to ${CONF_FILE}."
 
   weectl extension install /tmp/weewx-interceptor.zip --yes --config=${CONF_FILE}
   weectl station reconfigure --driver=user.interceptor --no-prompt --config=${CONF_FILE}
-  echo "Installed interceptor extension with default config"
+  bashio::log.info "Installed interceptor extension with default config"
 
-  echo "Please review and update ${CONF_FILE} as needed, then restart the container."
+  bashio::log.info "Please review and update ${CONF_FILE} as needed, then restart the container."
   exit 0
 fi
 
