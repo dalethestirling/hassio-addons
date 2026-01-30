@@ -14,7 +14,7 @@ STATION_LOCATION=$(bashio::config 'location')
 if [ ! -f "${CONF_FILE}" ]; then
   weectl station create ${WEEWX_ROOT} \
       --no-prompt \
-      --location=${STATION_LOCATION}
+      --location="${STATION_LOCATION}"
   bashio::log.info "A new set of configurations was created."
   
   # Append the logging configuration to the generated weewx.conf
