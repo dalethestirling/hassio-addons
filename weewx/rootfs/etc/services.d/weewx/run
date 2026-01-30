@@ -23,7 +23,7 @@ if [ ! -f "${CONF_FILE}" ]; then
       --location="${STATION_LOCATION}" \
       --altitude="${STATION_ALTITUDE}, ${STATION_ALTITUDE_FMT}" \
       --latitude=${STATION_LATITUDE} --longitude=${STATION_LONGITUDE} \
-      --units=${STATION_UNITS} \
+      --units=${STATION_UNITS}
   bashio::log.info "A new set of configurations was created."
   
   # Append the logging configuration to the generated weewx.conf
