@@ -26,6 +26,7 @@
 #### 1.1.5
 
 - Added port configuration to expose interceptor endpoint (48080 by default)
+- Added install and configuration docs to the repository 
 
 ## 1.0.0
 
