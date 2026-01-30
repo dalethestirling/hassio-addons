@@ -15,6 +15,10 @@
 
 - Updated start script to fix challenges with init of config
 
+#### 1.1.3
+
+- Added additional config options to addon config.yaml for initial config of weewx
+
 ## 1.0.0
 
 - Initial release

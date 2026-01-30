@@ -10,30 +10,42 @@ CONF_FILE="${WEEWX_ROOT}/weewx.conf"
 # Add your code herea
 
 STATION_LOCATION=$(bashio::config 'location')
+STATION_ALTITUDE=$(bashio::config 'altitude')
+STATION_ALTITUDE_FMT=$(bashio::config 'altitude_format')
+STATION_LATITUDE=$(bashio::config 'latitude')
+STATION_LONGITUDE=$(bashio::config 'longitude')
+STATION_UNITS=$(bashio::config 'display_units')
+
 
 if [ ! -f "${CONF_FILE}" ]; then
   weectl station create ${WEEWX_ROOT} \
       --no-prompt \
-      --location="${STATION_LOCATION}"
+      --location="${STATION_LOCATION}" \
+      --altitude="${STATION_ALTITUDE}, ${STATION_ALTITUDE_FMT}" \
+      --latitude=${STATION_LATITUDE} --longitude=${STATION_LONGITUDE} \
+      --units=${STATION_UNITS} \
   bashio::log.info "A new set of configurations was created."
   
   # Append the logging configuration to the generated weewx.conf
-  cat << EOF >> "${CONF_FILE}"
+  if grep -q "[Logging]" weewx.conf; then
+    bashio::log.error "Logging configuration already present in current weewx.conf. Skipping append."
+  else
+    cat << EOF >> "${CONF_FILE}"
 
 [Logging]
     [[root]]
       level = INFO
       handlers = console,
 EOF
+    bashio::log.info "Console logging configuration has been appended to ${CONF_FILE}."
+  fi
 
-  bashio::log.info "Console logging configuration has been appended to ${CONF_FILE}."
-
+  # Install the interceptor extension with default config
   weectl extension install /tmp/weewx-interceptor.zip --yes --config=${CONF_FILE}
   weectl station reconfigure --driver=user.interceptor --no-prompt --config=${CONF_FILE}
   bashio::log.info "Installed interceptor extension with default config"
 
   bashio::log.info "Please review and update ${CONF_FILE} as needed, then restart the container."
-  exit 0
 fi
 
 bashio::log.info "Starting Weewx service..."
