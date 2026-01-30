@@ -11,6 +11,10 @@
 - Updated the servicesd path from example to weewx
 - Updated echo statements to use bashio in my_program
 
+#### 1.1.2
+
+- Updated start script to fix challenges with init of config
+
 ## 1.0.0
 
 - Initial release
