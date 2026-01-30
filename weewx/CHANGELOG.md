@@ -23,6 +23,10 @@
 
 - Moved weewxd to the exec call in the run script
 
+#### 1.1.5
+
+- Added port configuration to expose interceptor endpoint (48080 by default)
+
 ## 1.0.0
 
 - Initial release
