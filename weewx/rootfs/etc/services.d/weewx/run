@@ -51,4 +51,4 @@ fi
 bashio::log.info "Starting Weewx service..."
 
 ## Run your program
-exec /usr/bin/my_program
+exec weewxd --config ${CONF_FILE}

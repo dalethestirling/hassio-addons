@@ -19,6 +19,10 @@
 
 - Added additional config options to addon config.yaml for initial config of weewx
 
+#### 1.1.4
+
+- Moved weewxd to the exec call in the run script
+
 ## 1.0.0
 
 - Initial release
