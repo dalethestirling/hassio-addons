@@ -70,7 +70,7 @@ You will need user credentials for your MQTT broker. The example below using Mos
 ```
 This block is added to the root of the `weewx.conf` file. 
 
-Now that the config is defined for the extension, it needs to be added to the `[[Services]]` configuration to be run as a component of the application. This is done by adding `weewx_ha.Controller` to the `report_services` service register (comma delimited list).
+Now that the config is defined for the extension, it needs to be added to the `[[Services]]` configuration to be run as a component of the application. This is done by adding `weewx_ha.Controller` to the `report_services` service register (comma-delimited list).
 
 ## Exposing reports using Caddy 2 addon
 
@@ -78,10 +78,10 @@ By default, the WeeWX addon publishes reports to `/config/public_html` so report
 
 To share with Caddy, the addon is built to mount the `/share` directory, which provides a persistent storage mount between addons, allowing the report files and images to be accessible. 
 
-First, a new folder needs to be created in teh `/share` directory. This can be done by connecting to the running WeeWX addon container using `docker exec -it <container ID> /bin/bash` and creating a `weewx` directory using `mkdir /share/weewx`. 
+First, a new folder needs to be created in the `/share` directory. This can be done by connecting to the running WeeWX add-on container with `docker exec -it <container ID> /bin/bash` and creating a `weewx` directory with `mkdir /share/weewx`. 
 
 Next any existing report data should be copied to the new directory by running the command `cp -r /config/public_html /share/weewx/`.
  
 Now that we have a new place defined for reports to be published the path that WeeWX publishes reports to needs to be updated within the `weewx.conf` (found in the WeeWX `addons_config`directory). The required update is to change `HTML_ROOT = public_html` to `HTML_ROOT = /share/weewx/public_html` in the `[StdReport]` section of the file. 
 
-Once the updates are completed, restart the addon via the Home Assistant UI, then the new path will be visible in the logs at the time of report generation.
+Once the updates are complete, restart the add-on via the Home Assistant UI, and the new path will be visible in the logs at the time of report generation.
