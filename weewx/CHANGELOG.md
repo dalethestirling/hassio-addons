@@ -28,6 +28,11 @@
 - Added port configuration to expose interceptor endpoint (48080 by default)
 - Added install and configuration docs to the repository 
 
+#### 1.1.6
+
+- Updated weewx to version 5.3.1
+- Updated base container to use hassio-addons/base:20.0.1
+
 ## 1.0.0
 
 - Initial release

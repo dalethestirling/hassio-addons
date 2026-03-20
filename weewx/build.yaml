@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-dockerfile
 build_from:
-  aarch64: "ghcr.io/hassio-addons/base/aarch64:20.0.0"
+  aarch64: "ghcr.io/hassio-addons/base/aarch64:20.0.1"
   # amd64 commented out due to no ability to test
   #amd64: "ghcr.io/hassio-addons/base/amd64:20.0.0"
 labels:
