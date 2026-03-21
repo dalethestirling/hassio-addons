@@ -8,6 +8,7 @@ FROM $BUILD_FROM
 RUN apk update && \
     apk add --no-cache wget && \
     apk add --no-cache git && \
+    apk add --no-cache libusb && \
     apk add --no-cache python3 && ln -sf python3 /usr/bin/python && \
 # Setup python virtual environment
     python -m venv /opt/venv && \

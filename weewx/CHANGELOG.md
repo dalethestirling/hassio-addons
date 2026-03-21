@@ -33,6 +33,10 @@
 - Updated weewx to version 5.3.1
 - Updated base container to use hassio-addons/base:20.0.1
 
+#### 1.1.7
+
+- Added missing dependency for usb support in in weewx (pyusb) to address https://github.com/dalethestirling/hassio-addons/issues/5
+
 ## 1.0.0
 
 - Initial release
