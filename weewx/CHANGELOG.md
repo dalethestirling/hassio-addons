@@ -37,6 +37,11 @@
 
 - Added missing dependency for usb support in in weewx (pyusb) to address https://github.com/dalethestirling/hassio-addons/issues/5
 
+#### 1.1.8
+
+- Update config.yaml to use UART via `uart: true`
+- Update config.yaml to use UDEV via `uart: true`
+
 ## 1.0.0
 
 - Initial release
