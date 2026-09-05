@@ -9,6 +9,9 @@ CONFIG_FILE="${CONFIG_DIR}/config"
 RIGHTS_FILE="${CONFIG_DIR}/rights"
 USERS_FILE="${CONFIG_DIR}/users"
 
+# Ensure stderr is redirected to stdout so all process errors enter add-on logs
+exec 2>&1
+
 LOG_LEVEL=$(bashio::config 'log_level')
 if [ -z "$LOG_LEVEL" ]; then LOG_LEVEL="info"; fi
 
@@ -89,7 +92,6 @@ file = ${RIGHTS_FILE}
 [storage]
 type = multifilesystem
 filesystem_folder = ${STORAGE_DIR}
-filesystem_locking = True
 
 [web]
 type = internal
@@ -99,8 +101,9 @@ level = ${LOG_LEVEL:-info}
 EOF
     bashio::log.info "Configured Radicale configuration at ${CONFIG_FILE}"
 else
-    # Purge deprecated logging config option from custom configuration file if present
+    # Purge deprecated logging & storage config options from custom configuration file if present
     sed -i -E '/^[[:space:]]*config[[:space:]]*=/d' "${CONFIG_FILE}" || true
+    sed -i -E '/^[[:space:]]*filesystem_locking[[:space:]]*=/d' "${CONFIG_FILE}" || true
     if ! grep -q "^[[:space:]]*level[[:space:]]*=" "${CONFIG_FILE}"; then
         if grep -q "^\[logging\]" "${CONFIG_FILE}"; then
             sed -i "/^\[logging\]/a level = ${LOG_LEVEL:-info}" "${CONFIG_FILE}" || true
@@ -136,6 +139,7 @@ if [ ! -f "${USERS_FILE}" ] || [ ! -s "${USERS_FILE}" ]; then
     bashio::log.warning "Please update credentials in the Add-on Configuration or directly in ${USERS_FILE}!"
 fi
 
+export PYTHONUNBUFFERED=1
 export RADICALE_CONFIG="${CONFIG_FILE}"
 bashio::log.info "Starting Radicale CalDAV/CardDAV service on port 5232..."
 exec radicale --config "${CONFIG_FILE}"

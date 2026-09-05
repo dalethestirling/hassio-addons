@@ -26,6 +26,7 @@ class TestRadicaleConfigLogic(unittest.TestCase):
         self.assertIn("[web]", script_content)
         self.assertIn("[logging]", script_content)
         self.assertNotIn("config = ${LOGGING_FILE}", script_content)
+        self.assertNotIn("filesystem_locking =", script_content)
 
         # Parse a sample generated config through configparser
         sample_config = """
@@ -48,7 +49,6 @@ file = /config/rights
 [storage]
 type = multifilesystem
 filesystem_folder = /config/collections
-filesystem_locking = True
 
 [web]
 type = internal
@@ -63,6 +63,7 @@ level = info
         self.assertEqual(parser.get("auth", "type"), "htpasswd")
         self.assertEqual(parser.get("auth", "htpasswd_encryption"), "bcrypt")
         self.assertEqual(parser.get("storage", "type"), "multifilesystem")
+        self.assertFalse(parser.has_option("storage", "filesystem_locking"))
         self.assertEqual(parser.get("web", "type"), "internal")
         self.assertEqual(parser.get("logging", "level"), "info")
         self.assertFalse(parser.has_option("logging", "config"))
@@ -132,13 +133,14 @@ level = info
         self.assertTrue(re.match(r"^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$", pw_hash))
 
     def test_legacy_logging_cleanup(self):
-        """Verify that legacy config = lines are stripped and logging level is valid for Radicale v3."""
-        legacy_config = """[logging]\nconfig = /config/logging\nlevel = DEBUG\n"""
-        # Remove deprecated config line
-        cleaned = re.sub(r"^config = .*\n?", "", legacy_config, flags=re.MULTILINE)
+        """Verify that legacy config = and filesystem_locking lines are stripped and logging level is valid for Radicale v3."""
+        legacy_config = """[storage]\ntype = multifilesystem\nfilesystem_folder = /config/collections\nfilesystem_locking = True\n[logging]\nconfig = /config/logging\nlevel = DEBUG\n"""
+        # Remove deprecated config & filesystem_locking lines
+        cleaned = re.sub(r"^[ \t]*(config|filesystem_locking)[ \t]*=.*\n?", "", legacy_config, flags=re.MULTILINE)
         parser = configparser.ConfigParser()
         parser.read_string(cleaned)
         self.assertFalse(parser.has_option("logging", "config"))
+        self.assertFalse(parser.has_option("storage", "filesystem_locking"))
         self.assertEqual(parser.get("logging", "level"), "DEBUG")
 
 

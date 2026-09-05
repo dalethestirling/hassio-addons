@@ -1,5 +1,15 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
 
+## 1.0.5
+
+- Redirect stderr to stdout (`exec 2>&1`) in service `run` script so all Radicale startup errors and Python tracebacks are captured in add-on logs
+- Enable unbuffered Python logging output (`PYTHONUNBUFFERED=1`)
+
+## 1.0.4
+
+- Remove deprecated `filesystem_locking` option from `[storage]` config section for Radicale v3 compatibility
+- Purge legacy `filesystem_locking` settings from existing configuration files on startup
+
 ## 1.0.3
 
 - Add fallback to default `info` log level in service `run` script when `log_level` option is unset or empty

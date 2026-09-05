@@ -23,6 +23,7 @@ RUN apk update && \
     rm -rf /var/cache/apk/* /tmp/* /root/.cache
 
 ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
 
 ### Add metadata
 LABEL org.opencontainers.image.authors="dale.stirling@gmail.com"
