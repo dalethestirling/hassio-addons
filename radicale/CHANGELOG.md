@@ -1,5 +1,10 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
 
+## 1.0.7
+
+- Remove redundant `RADICALE_CONFIG` environment variable export which caused double config loading and service process exit
+- Remove `exec 2>&1` script-level redirection to prevent file descriptor conflicts with `bashio` and `s6-overlay` supervision
+
 ## 1.0.6
 
 - Fix rights configuration by updating rule key from `permission` to plural `permissions` for Radicale 3.x compatibility

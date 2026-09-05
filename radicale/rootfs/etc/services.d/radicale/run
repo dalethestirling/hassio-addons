@@ -9,9 +9,6 @@ CONFIG_FILE="${CONFIG_DIR}/config"
 RIGHTS_FILE="${CONFIG_DIR}/rights"
 USERS_FILE="${CONFIG_DIR}/users"
 
-# Ensure stderr is redirected to stdout so all process errors enter add-on logs
-exec 2>&1
-
 LOG_LEVEL=$(bashio::config 'log_level')
 if [ -z "$LOG_LEVEL" ]; then LOG_LEVEL="info"; fi
 
@@ -145,6 +142,5 @@ if [ ! -f "${USERS_FILE}" ] || [ ! -s "${USERS_FILE}" ]; then
 fi
 
 export PYTHONUNBUFFERED=1
-export RADICALE_CONFIG="${CONFIG_FILE}"
 bashio::log.info "Starting Radicale CalDAV/CardDAV service on port 5232..."
 exec radicale --config "${CONFIG_FILE}"
