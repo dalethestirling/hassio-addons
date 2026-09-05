@@ -1,15 +1,23 @@
 #!/usr/bin/env bashio
 # ==============================================================================
-# Take down the S6 supervision tree when radicale fails
+# Take down the S6 supervision tree when radicale fails or exits cleanly
 # s6-overlay docs: https://github.com/just-containers/s6-overlay
+#
+# Exit code semantics from s6-supervise:
+#   0   = process exited cleanly (normal shutdown)
+#   256 = process was killed by a signal (e.g. SIGTERM on addon stop)
+#   other = process crashed / failed to start
 # ==============================================================================
 
 declare APP_EXIT_CODE=${1}
 
-if [[ "${APP_EXIT_CODE}" -ne 0 ]] && [[ "${APP_EXIT_CODE}" -ne 256 ]]; then
-  bashio::log.warning "Halt add-on with exit code ${APP_EXIT_CODE}"
+if [[ "${APP_EXIT_CODE}" -eq 0 ]] || [[ "${APP_EXIT_CODE}" -eq 256 ]]; then
+  # Clean exit or signal-terminated — let s6 handle the stop gracefully
+  bashio::log.info "Radicale service stopped (exit code ${APP_EXIT_CODE})"
+else
+  # Non-zero exit that isn't a signal kill: Radicale crashed or failed to start.
+  # Halt the container so the restart loop does not occur.
+  bashio::log.error "Radicale exited with unexpected code ${APP_EXIT_CODE} — halting add-on"
   echo "${APP_EXIT_CODE}" > /run/s6-linux-init-container-results/exitcode
   exec /run/s6/basedir/bin/halt
 fi
-
-bashio::log.info "Service restart after closing"

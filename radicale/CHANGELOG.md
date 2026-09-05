@@ -1,5 +1,12 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
 
+## 1.0.8
+
+- Fix service restart loop caused by `with-contenv` not propagating the `/opt/venv/bin` PATH into the s6 service environment — radicale module was not found on system Python; changed to use absolute path `/opt/venv/bin/python3 -m radicale`
+- Fix `finish` script logic that was allowing any non-crash exit code to silently restart the service; now halts the add-on on any unexpected non-zero exit code to prevent infinite restart loops
+- Change process execution to `exec python3 -m radicale --config "${CONFIG_FILE}"`
+- Change working directory to `/config` prior to launching Radicale to align terminal and service execution contexts
+
 ## 1.0.7
 
 - Remove redundant `RADICALE_CONFIG` environment variable export which caused double config loading and service process exit

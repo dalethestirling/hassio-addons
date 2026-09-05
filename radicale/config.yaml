@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-config
 name: Radicale
-version: "1.0.7"
+version: "1.0.8"
 slug: radicale
 description: "Radicale is a lightweight CalDAV (calendars, todo-lists) and CardDAV (contacts) server"
 url: "https://github.com/dalethestirling/hassio-addons/tree/main/radicale"

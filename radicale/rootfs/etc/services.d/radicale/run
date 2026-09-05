@@ -143,4 +143,4 @@ fi
 
 export PYTHONUNBUFFERED=1
 bashio::log.info "Starting Radicale CalDAV/CardDAV service on port 5232..."
-exec radicale --config "${CONFIG_FILE}"
+exec python3 -m radicale --config "${CONFIG_FILE}"
