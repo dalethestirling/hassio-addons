@@ -72,9 +72,9 @@ level = info
         """Verify the rights logic used in Radicale 3.x."""
         # Standard rules
         rules = [
-            {"name": "root", "user": r".+", "collection": r"^$", "permission": "r"},
-            {"name": "web", "user": r".+", "collection": r"^\.web$", "permission": "r"},
-            {"name": "owner-write", "user": r".+", "collection_pattern": r"^{user}(/.*)?$", "permission": "rw"},
+            {"name": "root", "user": r".+", "collection": r"^$", "permissions": "r"},
+            {"name": "web", "user": r".+", "collection": r"^\.web$", "permissions": "r"},
+            {"name": "owner-write", "user": r".+", "collection_pattern": r"^{user}(/.*)?$", "permissions": "rw"},
         ]
 
         # Test case 1: User 'alice' accessing her own calendar 'alice/work'
@@ -87,7 +87,7 @@ level = info
                 if not pat:
                     pat = rule["collection_pattern"].format(user=re.escape(user))
                 if re.match(pat, path):
-                    matched_perm = rule["permission"]
+                    matched_perm = rule["permissions"]
                     break
 
         self.assertEqual(matched_perm, "rw", "Alice should have rw permissions to alice/work")
@@ -102,7 +102,7 @@ level = info
                 if not pat:
                     pat = rule["collection_pattern"].format(user=re.escape(user))
                 if re.match(pat, path):
-                    matched_perm = rule["permission"]
+                    matched_perm = rule["permissions"]
                     break
 
         self.assertIsNone(matched_perm, "Bob should not match any rule for alice/work under default rights")
@@ -117,7 +117,7 @@ level = info
                 if not pat:
                     pat = rule["collection_pattern"].format(user=re.escape(user))
                 if re.match(pat, path):
-                    matched_perm = rule["permission"]
+                    matched_perm = rule["permissions"]
                     break
 
         self.assertEqual(matched_perm, "r", "Bob should have read access to discovery root")

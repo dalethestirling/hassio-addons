@@ -50,21 +50,26 @@ if [ ! -f "${RIGHTS_FILE}" ]; then
 [root]
 user = .+
 collection =
-permission = r
+permissions = r
 
 # Allow internal web interface access
 [web]
 user = .+
 collection = \.web
-permission = r
+permissions = r
 
 # Allow users full read/write access to their own collections
 [owner-write]
 user = .+
 collection = {user}(/.*)?
-permission = rw
+permissions = rw
 EOF
     bashio::log.info "Created default rights configuration at ${RIGHTS_FILE}"
+else
+    # Update legacy singular permission key to plural permissions for Radicale v3 compatibility
+    if ! bashio::config.true 'custom_config'; then
+        sed -i -E 's/^[[:space:]]*permission[[:space:]]*=/permissions =/' "${RIGHTS_FILE}" || true
+    fi
 fi
 
 # Manage Radicale configuration file

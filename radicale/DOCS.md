@@ -149,19 +149,19 @@ On first run, Radicale creates the following default rules:
 [root]
 user = .+
 collection =
-permission = r
+permissions = r
 
 # Allow internal web interface access
 [web]
 user = .+
 collection = \.web
-permission = r
+permissions = r
 
 # Allow users full read/write access to their own collections
 [owner-write]
 user = .+
 collection = {user}(/.*)?
-permission = rw
+permissions = rw
 ```
 
 ### Shared and Read-Only Calendars
@@ -173,13 +173,13 @@ To share a calendar between users, you can edit `/config/rights` and set `custom
 [family-shared]
 user = alice
 collection = bob/family(/.*)?
-permission = rw
+permissions = rw
 
 # Allow public or read-only view of a specific calendar for user 'guest'
 [guest-readonly]
 user = guest
 collection = alice/public_events(/.*)?
-permission = r
+permissions = r
 ```
 
 ---

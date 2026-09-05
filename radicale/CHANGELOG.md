@@ -1,5 +1,10 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
 
+## 1.0.6
+
+- Fix rights configuration by updating rule key from `permission` to plural `permissions` for Radicale 3.x compatibility
+- Automatically migrate legacy `permission =` entries to `permissions =` in existing `/config/rights` files on startup
+
 ## 1.0.5
 
 - Redirect stderr to stdout (`exec 2>&1`) in service `run` script so all Radicale startup errors and Python tracebacks are captured in add-on logs
