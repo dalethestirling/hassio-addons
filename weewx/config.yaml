@@ -8,7 +8,7 @@ udev: true
 url: "https://github.com/dalethestirling/hassio-addons/tree/main/weewx"
 arch:
   - aarch64
-  # - amd64
+  - amd64
 discovery:
   - weewx
 init: false

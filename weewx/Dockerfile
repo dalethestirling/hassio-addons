@@ -30,3 +30,5 @@ LABEL org.opencontainers.image.vendor="dalethestirling"
 ### Copy root filesystem
 COPY rootfs /
 
+RUN chmod +x /etc/services.d/weewx/run
+RUN chmod +x /etc/services.d/weewx/finish
