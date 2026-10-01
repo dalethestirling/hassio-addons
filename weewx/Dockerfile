@@ -4,23 +4,22 @@ FROM $BUILD_FROM
 
 
 ### Install dependencies
+# Copy requirements first for Docker layer caching
+COPY requirements.txt /tmp/requirements.txt
+
 # Install apk packages
 RUN apk update && \
-    apk add --no-cache wget && \
-    apk add --no-cache git && \
-    apk add --no-cache libusb && \
-    apk add --no-cache python3 && ln -sf python3 /usr/bin/python && \
-# Setup python virtual environment
+    apk add --no-cache wget git libusb python3 && \
+    ln -sf python3 /usr/bin/python && \
     python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
-# Install weewx
-    pip install --no-cache weewx   
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    rm -rf /tmp/requirements.txt
+
 ENV PATH="/opt/venv/bin:$PATH"
-    
+
 # Interceptor extension, allowing capture through DNS redirection
-RUN  wget -O /tmp/weewx-interceptor.zip https://github.com/matthewwall/weewx-interceptor/archive/master.zip && \
-# Install weewx homeassistant extension     
-     pip install --no-cache git+https://github.com/felddy/weewx-home-assistant@v1.0.0
+RUN wget -O /tmp/weewx-interceptor.zip https://github.com/matthewwall/weewx-interceptor/archive/master.zip
 
 
 ### Add metadata

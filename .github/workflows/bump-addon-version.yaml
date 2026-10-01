@@ -1,0 +1,81 @@
+name: Bump Add-on Version on Dependabot PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-version:
+    if: github.actor == 'dependabot[bot]' && contains(github.event.pull_request.labels.*.name, 'dependencies')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if weewx/requirements.txt was changed
+        id: check_files
+        run: |
+          if git diff --name-only origin/main...HEAD | grep -q '^weewx/requirements.txt$'; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Bump add-on version and update changelog
+        if: steps.check_files.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          
+          # Get current version from config.yaml
+          CURRENT_VERSION=$(grep '^version:' weewx/config.yaml | sed 's/version: "\(.*\)"/\1/')
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Parse version (assuming semver: major.minor.patch)
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+          echo "New version: $NEW_VERSION"
+          
+          # Update config.yaml
+          sed -i "s/^version: \"$CURRENT_VERSION\"/version: \"$NEW_VERSION\"/" weewx/config.yaml
+          
+          # Get the package name and new version from the PR
+          PR_TITLE=$(gh pr view --json title -q .title)
+          echo "PR Title: $PR_TITLE"
+          
+          # Extract dependency info from PR title (format: "Bump weewx from X to Y")
+          # or "Bump pyusb from X to Y" etc.
+          DEP_NAME=$(echo "$PR_TITLE" | sed -E 's/Bump ([^ ]+) from .*/\1/')
+          NEW_DEP_VERSION=$(echo "$PR_TITLE" | sed -E 's/.* from .* to ([^ ]+).*/\1/')
+          
+          # Prepend to CHANGELOG.md
+          DATE=$(date +%Y-%m-%d)
+          CHANGELOG_ENTRY="#### ${NEW_VERSION}\n\n- Updated ${DEP_NAME} to ${NEW_DEP_VERSION}\n"
+          
+          # Insert after the first line (which is the comment)
+          sed -i "2a\\${CHANGELOG_ENTRY}" weewx/CHANGELOG.md
+          
+          # Commit changes
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add weewx/config.yaml weewx/CHANGELOG.md
+          git commit -m "chore: bump add-on version to ${NEW_VERSION} (via dependabot)"
+          git push
+
+      - name: Update PR description
+        if: steps.check_files.outputs.changed == 'true'
+        run: |
+          gh pr edit --body "$(gh pr view --json body -q .body)
+
+---
+
+**Automated add-on version bump:** This PR also updates the add-on version in \`weewx/config.yaml\` and \`weewx/CHANGELOG.md\`."
