@@ -1,5 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-dockerfile
-ARG BUILD_FROM
+ARG BUILD_ARCH
+ARG BUILD_FROM=ghcr.io/hassio-addons/base/${BUILD_ARCH}:20.0.1
 FROM $BUILD_FROM
 
 ### Install dependencies
