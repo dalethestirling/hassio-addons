@@ -7,6 +7,12 @@
 - Change process execution to `exec python3 -m radicale --config "${CONFIG_FILE}"`
 - Change working directory to `/config` prior to launching Radicale to align terminal and service execution contexts
 
+#### 1.0.9
+
+- Extract Python dependencies to requirements.txt for Dependabot support
+- Migrate to Home Assistant builder composable actions (BuildKit)
+- Fix base image resolution with BUILD_FROM default in Dockerfile
+
 ## 1.0.7
 
 - Remove redundant `RADICALE_CONFIG` environment variable export which caused double config loading and service process exit

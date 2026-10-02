@@ -42,6 +42,12 @@
 - Update config.yaml to use UART via `uart: true`
 - Update config.yaml to use UDEV via `uart: true`
 
+#### 1.1.9
+
+- Extract Python dependencies to requirements.txt for Dependabot support
+- Migrate to Home Assistant builder composable actions (BuildKit)
+- Fix base image resolution with BUILD_FROM default in Dockerfile
+
 ## 1.0.0
 
 - Initial release
