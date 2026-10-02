@@ -31,4 +31,4 @@ ports:
 ports_description:
   5232/tcp: CalDAV and CardDAV service port
 webui: "http://[HOST]:[PORT:5232]/"
-image: "ghcr.io/dalethestirling/{arch}-addon-radicale"
+image: "ghcr.io/dalethestirling/addon-radicale"

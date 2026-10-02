@@ -33,4 +33,4 @@ ports:
   80/tcp: 48080
 ports_description:
   80/tcp: Intercepter port
-image: "ghcr.io/dalethestirling/{arch}-addon-weewx"
+image: "ghcr.io/dalethestirling/addon-weewx"
