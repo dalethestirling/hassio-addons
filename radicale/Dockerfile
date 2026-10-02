@@ -4,6 +4,9 @@ ARG BUILD_FROM=ghcr.io/hassio-addons/base/${BUILD_ARCH}:20.0.1
 FROM $BUILD_FROM
 
 ### Install dependencies
+# Copy requirements for pip install
+COPY requirements.txt /tmp/requirements.txt
+
 RUN apk update && \
     apk add --no-cache \
         apache2-utils \
@@ -16,12 +19,8 @@ RUN apk update && \
     python3 -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --no-cache-dir --upgrade pip wheel && \
-    pip install --no-cache-dir \
-        radicale \
-        passlib[bcrypt] \
-        bcrypt \
-        defusedxml && \
-    rm -rf /var/cache/apk/* /tmp/* /root/.cache
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    rm -rf /var/cache/apk/* /tmp/* /root/.cache /tmp/requirements.txt
 
 ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1

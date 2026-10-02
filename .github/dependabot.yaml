@@ -11,3 +11,9 @@ updates:
     schedule:
       interval: weekly
       time: "06:00"
+
+  - package-ecosystem: "pip"
+    directory: "/radicale"
+    schedule:
+      interval: weekly
+      time: "06:00"

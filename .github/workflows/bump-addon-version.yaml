@@ -15,67 +15,87 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check if weewx/requirements.txt was changed
-        id: check_files
+      - name: Find changed add-on directories
+        id: find_addon
         run: |
-          if git diff --name-only origin/main...HEAD | grep -q '^weewx/requirements.txt$'; then
-            echo "changed=true" >> $GITHUB_OUTPUT
+          # Get list of changed files in the PR
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+          
+          # Find which add-on directories have requirements.txt changes
+          ADDONS_FOUND=""
+          for file in $CHANGED_FILES; do
+            if [[ "$file" =~ ^([^/]+)/requirements\.txt$ ]]; then
+              ADDON="${BASH_REMATCH[1]}"
+              ADDONS_FOUND="${ADDONS_FOUND}${ADDON} "
+            fi
+          done
+          
+          if [[ -n "$ADDONS_FOUND" ]]; then
+            echo "addons=$ADDONS_FOUND" >> $GITHUB_OUTPUT
           else
-            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "addons=" >> $GITHUB_OUTPUT
           fi
 
       - name: Bump add-on version and update changelog
-        if: steps.check_files.outputs.changed == 'true'
+        if: steps.find_addon.outputs.addons != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           
-          # Get current version from config.yaml
-          CURRENT_VERSION=$(grep '^version:' weewx/config.yaml | sed 's/version: "\(.*\)"/\1/')
-          echo "Current version: $CURRENT_VERSION"
+          ADDONS="${{ steps.find_addon.outputs.addons }}"
           
-          # Parse version (assuming semver: major.minor.patch)
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
-          echo "New version: $NEW_VERSION"
+          for ADDON in $ADDONS; do
+            echo "Processing add-on: $ADDON"
+            
+            # Get current version from config.yaml
+            CURRENT_VERSION=$(grep '^version:' "$ADDON/config.yaml" | sed 's/version: "\(.*\)"/\1/')
+            echo "Current version: $CURRENT_VERSION"
+            
+            # Parse version (assuming semver: major.minor.patch)
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+            NEW_PATCH=$((PATCH + 1))
+            NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+            echo "New version: $NEW_VERSION"
+            
+            # Update config.yaml
+            sed -i "s/^version: \"$CURRENT_VERSION\"/version: \"$NEW_VERSION\"/" "$ADDON/config.yaml"
+            
+            # Get the package name and new version from the PR
+            PR_TITLE=$(gh pr view --json title -q .title)
+            echo "PR Title: $PR_TITLE"
+            
+            # Extract dependency info from PR title (format: "Bump weewx from X to Y")
+            # or "Bump pyusb from X to Y" etc.
+            DEP_NAME=$(echo "$PR_TITLE" | sed -E 's/Bump ([^ ]+) from .*/\1/')
+            NEW_DEP_VERSION=$(echo "$PR_TITLE" | sed -E 's/.* from .* to ([^ ]+).*/\1/')
+            
+            # Prepend to CHANGELOG.md
+            DATE=$(date +%Y-%m-%d)
+            CHANGELOG_ENTRY="#### ${NEW_VERSION}\n\n- Updated ${DEP_NAME} to ${NEW_DEP_VERSION}\n"
+            
+            # Insert after the first line (which is the comment)
+            sed -i "2a\\${CHANGELOG_ENTRY}" "$ADDON/CHANGELOG.md"
+            
+            # Commit changes
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add "$ADDON/config.yaml" "$ADDON/CHANGELOG.md"
+            git commit -m "chore: bump $ADDON add-on version to ${NEW_VERSION} (via dependabot)"
+          done
           
-          # Update config.yaml
-          sed -i "s/^version: \"$CURRENT_VERSION\"/version: \"$NEW_VERSION\"/" weewx/config.yaml
-          
-          # Get the package name and new version from the PR
-          PR_TITLE=$(gh pr view --json title -q .title)
-          echo "PR Title: $PR_TITLE"
-          
-          # Extract dependency info from PR title (format: "Bump weewx from X to Y")
-          # or "Bump pyusb from X to Y" etc.
-          DEP_NAME=$(echo "$PR_TITLE" | sed -E 's/Bump ([^ ]+) from .*/\1/')
-          NEW_DEP_VERSION=$(echo "$PR_TITLE" | sed -E 's/.* from .* to ([^ ]+).*/\1/')
-          
-          # Prepend to CHANGELOG.md
-          DATE=$(date +%Y-%m-%d)
-          CHANGELOG_ENTRY="#### ${NEW_VERSION}\n\n- Updated ${DEP_NAME} to ${NEW_DEP_VERSION}\n"
-          
-          # Insert after the first line (which is the comment)
-          sed -i "2a\\${CHANGELOG_ENTRY}" weewx/CHANGELOG.md
-          
-          # Commit changes
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add weewx/config.yaml weewx/CHANGELOG.md
-          git commit -m "chore: bump add-on version to ${NEW_VERSION} (via dependabot)"
           git push
 
       - name: Update PR description
-        if: steps.check_files.outputs.changed == 'true'
+        if: steps.find_addon.outputs.addons != ''
         run: |
+          ADDONS="${{ steps.find_addon.outputs.addons }}"
           gh pr edit --body "$(gh pr view --json body -q .body)
 
 ---
 
-**Automated add-on version bump:** This PR also updates the add-on version in \`weewx/config.yaml\` and \`weewx/CHANGELOG.md\`."
+**Automated add-on version bump:** This PR also updates the add-on version and CHANGELOG for: $ADDONS."

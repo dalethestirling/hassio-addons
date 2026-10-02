@@ -1,0 +1,4 @@
+radicale
+passlib[bcrypt]
+bcrypt
+defusedxml
